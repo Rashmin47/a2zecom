@@ -1,3 +1,4 @@
+import 'package:a2zecom/db/db_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -5,6 +6,10 @@ class AuthService {
   static User? get currentUser => _auth.currentUser;
   static Future<bool> loginAdmin(String email, String password) async {
     final credential = await _auth.signInWithEmailAndPassword(email: email, password: password);
-    return credential.user != null;
+    return DbHelper.isAdmin(credential.user!.uid);
+  }
+
+  static Future<void> logout() {
+    return _auth.signOut();
   }
 }

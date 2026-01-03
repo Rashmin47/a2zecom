@@ -1,4 +1,9 @@
+import 'package:a2zecom/auth/auth_service.dart';
+import 'package:a2zecom/pages/dashboard_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   static const String routeName = '/login';
@@ -46,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
               Padding(
                 padding: EdgeInsets.all(4.0),
                 child: TextFormField(
-
                   obscureText: true,
 
                   controller: _passwordController,
@@ -63,10 +67,17 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
               ),
-              ElevatedButton(onPressed: _authenticate, child: const Text('Login as Admin')),
+              ElevatedButton(
+                onPressed: _authenticate,
+                child: const Text('Login as Admin'),
+              ),
               Padding(
-                  padding: EdgeInsets.all(8.0 ),
-                  child: Text(_errMsg, style: const TextStyle(fontSize: 18,color: Colors.red),))
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  _errMsg,
+                  style: const TextStyle(fontSize: 18, color: Colors.red),
+                ),
+              ),
             ],
           ),
         ),
@@ -82,5 +93,28 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _authenticate() async {
+    if (_formKey.currentState!.validate()) {
+      EasyLoading.show(status: 'Please Wait');
+      final email = _emailController.text;
+      final pass = _passwordController.text;
+      try {
+        final status = await AuthService.loginAdmin(email, pass);
+        EasyLoading.dismiss();
+        if(status) {
+          context.goNamed(DashboardPage.routeName);
+        } else {
+          await AuthService.logout();
+          setState(() {
+            _errMsg = 'This is not an Admin account';
+          });
+        }
+
+      } on FirebaseAuthException catch (error) {
+        EasyLoading.dismiss();
+        setState(() {
+          _errMsg = error.message!;
+        });
+      }
+    }
   }
 }
