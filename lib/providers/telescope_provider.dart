@@ -16,6 +16,9 @@ Future<void> addBrand(String name) {
   final brand = Brand(name: name);
   return DbHelper.addBrand(brand);
 }
+Future<void> updateTelescopeField(String id, String field, dynamic value) {
+  return DbHelper.updateTelescopeField(id,{field: value});
+}
 
 getAllBrands() {
   DbHelper.getAllBrands().listen((snapshot) {
@@ -43,5 +46,10 @@ Future<ImageModel> uploadImage(String imageLocalPath) async {
   final snapshot = await uploadTask.whenComplete(() => null);
   final url = await snapshot.ref.getDownloadURL();
   return ImageModel(imageName: imageName, directoryName: telescopeImageDirectory, downloadUrl: url);
+}
+
+Future<void> deleteImage(String id, ImageModel image) async {
+  final photoRef = FirebaseStorage.instance.ref().child('${image.directoryName}${image.imageName}');
+  return photoRef.delete();
 }
 }
