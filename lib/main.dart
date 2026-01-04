@@ -3,6 +3,7 @@ import 'package:a2zecom/pages/add_telescope_page.dart';
 import 'package:a2zecom/pages/brand_page.dart';
 import 'package:a2zecom/pages/dashboard_page.dart';
 import 'package:a2zecom/pages/login_page.dart';
+import 'package:a2zecom/pages/telescope_details_page.dart';
 import 'package:a2zecom/pages/view_telescope_page.dart';
 import 'package:a2zecom/providers/telescope_provider.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,13 @@ class MyApp extends StatelessWidget {
             name: ViewTelescopePage.routeName,
             path: ViewTelescopePage.routeName,
             builder: (context, state) => const ViewTelescopePage(),
+            routes: [
+              GoRoute(
+                name: TelescopeDetailsPage.routeName,
+                path: TelescopeDetailsPage.routeName,
+                builder: (context, state) =>  TelescopeDetailsPage(id: state.extra! as String),
+              ),
+            ]
           ),
           GoRoute(
             name: BrandPage.routeName,
