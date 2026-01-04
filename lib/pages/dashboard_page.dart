@@ -1,10 +1,15 @@
 import 'package:a2zecom/auth/auth_service.dart';
+import 'package:a2zecom/customwidgets/dashboard_item_view.dart';
+import 'package:a2zecom/models/dashboard_model.dart';
 import 'package:a2zecom/pages/login_page.dart';
+import 'package:a2zecom/providers/telescope_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class DashboardPage extends StatefulWidget {
   static const String routeName = '/';
+
   const DashboardPage({super.key});
 
   @override
@@ -13,20 +18,41 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   @override
+  void didChangeDependencies() {
+Provider.of<TelescopeProvider>(context,listen: false).getAllBrands();
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
-          IconButton(onPressed: () {
-            AuthService.logout().then((value) => context.goNamed(LoginPage.routeName));
-          }, icon: const Icon(Icons.logout))
+          IconButton(
+            onPressed: () {
+              AuthService.logout().then(
+                (value) => context.goNamed(LoginPage.routeName),
+              );
+            },
+            icon: const Icon(Icons.logout),
+          ),
         ],
       ),
-      body: Center(
-        child: Text('Dashboard Page')
-        ,
+      body: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        itemCount: dashboardModelList.length,
+        itemBuilder: (context, index) {
+          final model = dashboardModelList[index];
+          return DashboardItemView(model: model, onPress: (route) {
+            context.goNamed(route);
+          });
+        },
       ),
     );
   }
+
+
 }
